@@ -1,5 +1,0 @@
-#Add more rss if required
-inputs:
-  - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=commie+K+return+of+kings&filter=2
-  - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=commie+One+Punch+Man&filter=2
-accept_all: yes
