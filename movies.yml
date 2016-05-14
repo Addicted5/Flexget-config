@@ -1,0 +1,32 @@
+#filters
+imdb_lookup: yes
+torrent_alive: yes
+discover:
+  what:
+    - movie_list: ToDownload
+  from:
+    - search_rss: https://yts.ag/rss/{{ search_term|replace('\ \(\d\d\d\d\)', '')}}/all/all/4
+    - rarbg: 
+        category: [44, 45]
+        ranked: True
+regexp:
+  reject:
+    - (?i)[ .]webrip[ .]
+    - (?i)[ .]cam[ .]
+    - (?i)[ .]bdscr[ .]
+    - (?i)[ .]dvdscr[ .]
+    - (?i)[ .]preair[ .]
+    - (?i)[ .]ppvrip[ .]
+    - (?i)[ .]r5[ .]
+    - (?i)[ .]tc[ .]
+    - (?i)[ .]ts[ .]
+    - (?i)[ .]ecc[ .]
+    - (?i)[ .]avc[ .]
+    - (?i)[ .]qebs[ .]
+    - (?i)[ .]hdtc[ .]
+    - (?i)[ .]hdcam[ .]
+    - (?i)[ .]hdts[ .]
+list_add:
+  - movie_list: OnDisk
+list_queue:
+  - movie_list: ToDownload

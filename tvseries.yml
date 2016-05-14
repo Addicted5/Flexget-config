@@ -1,0 +1,30 @@
+inputs:
+  - rss: https://eztv.ag/ezrss.xml
+imdb_lookup: yes
+thetvdb_lookup: yes
+tvmaze_lookup: yes
+configure_series:
+  from:
+    trakt_list:
+      username: Addicted5
+      account: traktuser
+      list: mytvshows
+      type: shows
+      strip_dates: yes
+  settings:
+    identified_by: ep
+    quality: hdtv
+    from_group:
+      - killers
+      - lol
+      - asap
+      - fum
+      - fleet
+      - tla
+      - dhd
+list_add:
+  - trakt_list:
+      username: Addicted5
+      account: traktuser
+      list: collection
+      type: shows
