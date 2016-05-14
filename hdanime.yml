@@ -2,7 +2,4 @@
 inputs:
   - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=commie+K+return+of+kings&filter=2
   - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=commie+One+Punch+Man&filter=2
-  - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=fff+Noragami+Aragoto&filter=2
-  - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=fff+Gakusen+Toshi+Asterisk&filter=2
-  - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=Hai+to+Gensou+no+Grimgar&filter=3
 accept_all: yes
