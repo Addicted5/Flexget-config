@@ -1,0 +1,305 @@
+secrets: secrets.yml
+#______________SCHEDULE_________________#
+schedules: 
+  - tasks: [hdanime]
+    interval:
+      hours: 16
+  - tasks: [tvshows]
+    schedule:
+      hour: 5-13
+      minute: "*/25"
+  - tasks: [fill_ToDownload]
+    interval:
+      days: 2
+  - tasks: [disc_1080p_mov, disc_720p_mov, disc_movie]
+    interval:
+      days: 1
+  - tasks: [ondisk_imdb]
+    interval:
+      days: 4
+  - tasks: [horrible]
+    schedule:
+      day_of_week: thu,fri,sat,sun
+      minute: "*/45"
+#______________WEB_UI_________________#
+web_server:
+  bind: 0.0.0.0
+  port: 9090
+api: yes
+webui: yes
+#_____________TEMPLATES________________#
+templates:
+#_________________GLOBAL___________________#
+  global:
+    transmission:
+      host: localhost
+      port: 9091
+      username: '{{secrets.transmission.user}}'
+      password: '{{secrets.transmission.pass}}'
+      ratio: 0.001
+    verify_ssl_certificates: no
+    imdb_lookup: yes
+    thetvdb_lookup: yes
+#_______________MOVIES___________________#
+  tempmovie:
+    torrent_alive: yes
+    discover:
+      what:
+        - movie_list: ToDownload
+      from:
+        - search_rss: https://yts.ag/rss/{{ search_term|replace('\ \(\d\d\d\d\)', '')}}/all/all/4
+        - rarbg: 
+            category: [44, 45]
+            ranked: True
+    regexp:
+      reject:
+        - (?i)[ .]webrip[ .]
+        - (?i)[ .]cam[ .]
+        - (?i)[ .]bdscr[ .]
+        - (?i)[ .]dvdscr[ .]
+        - (?i)[ .]preair[ .]
+        - (?i)[ .]ppvrip[ .]
+        - (?i)[ .]r5[ .]
+        - (?i)[ .]tc[ .]
+        - (?i)[ .]ts[ .]
+        - (?i)[ .]ecc[ .]
+        - (?i)[ .]avc[ .]
+        - (?i)[ .]qebs[ .]
+        - (?i)[ .]hdtc[ .]
+        - (?i)[ .]hdcam[ .]
+        - (?i)[ .]hdts[ .]
+    list_add:
+      - movie_list: OnDisk
+    list_queue:
+      - movie_list: ToDownload
+#_______________TVSHOWS____________________#
+  temptvshows:
+#Input
+    inputs:
+      - rss: https://eztv.ag/ezrss.xml
+#Filter
+    configure_series:
+      from:
+        trakt_list:
+          username: Addicted5
+          account: traktuser
+          list: mytvshows
+          type: shows
+          strip_dates: yes
+      settings:
+        identified_by: ep
+        quality: hdtv
+        from_group:
+          - killers
+          - lol
+          - asap
+          - fum
+          - fleet
+          - tla
+          - dhd
+#Output
+    list_add:
+      - trakt_list:
+          username: Addicted5
+          account: traktuser
+          list: collection
+          type: shows
+#_______________HORRIBLESUBS_ANIME__________________#
+  temphorrible:
+#Input
+    inputs:
+      - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=%5BHorribleSubs%5D++%5B720p%5D&filter=2
+      - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=%5BHorribleSubs%5D++%5B480p%5D&filter=2
+#Filter
+    series:
+      settings:
+        anime720p:
+          identified_by: sequence
+          sequence_regexp:
+            - (\d+)
+            - S(\d+) (\d+)
+          from_group: HorribleSubs
+          quality: 720p
+#         quality: 720p 10bit !h265 !8bit
+        anime480p:
+          identified_by: sequence
+          sequence_regexp:
+            - (\d+)
+            - S(\d+) (\d+)
+          from_group: HorribleSubs
+          quality: 480p
+      anime720p:
+        - Naruto Shippuuden:
+            begin: 460
+        - Terra Formars:
+            begin: 06
+      anime480p:
+        - Boku no Hero Academia:
+            begin: 07
+        - Flying Witch:
+            begin: 06
+        - Gakusen Toshi Asterisk:
+            begin: 19
+        - Kabaneri of the Iron Fortress:
+            begin: 05
+        - Kiznaiver:
+            begin: 06
+        - Nijiiro Days:
+            begin: 18
+#___________________________________________#
+tasks:
+  tvshows:
+    priority: 1
+    send_telegram:
+      recipients:
+        - username: '{{secrets.tg.user}}'
+      bot_token: '{{secrets.tg.bot_tk}}'
+      parse_mode: markdown
+      template: |
+        *{{series_name}}*
+        *{{title}}*
+        *Size- [{{content_size}}] MB*
+        [{{imdb_url}}]
+#___________________________________________#
+  horrible:
+    priority: 2
+    send_telegram:
+      recipients:
+        - username: '{{secrets.tg.user}}'
+      bot_token: '{{secrets.tg.bot_tk}}'
+      parse_mode: markdown
+      template: |
+        *{{series_name}}*
+        *{{title}}*
+        *Size- [{{content_size}}] MB*
+        [{{imdb_url}}]
+#___________________________________________#
+  hdanime:
+    priority: 3
+    inputs:
+      - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=commie+K+return+of+kings&filter=2
+      - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=commie+One+Punch+Man&filter=2
+      - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=fff+Noragami+Aragoto&filter=2
+      - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=fff+Gakusen+Toshi+Asterisk&filter=2
+      - rss: http://www.nyaa.se/?page=rss&cats=1_37&term=Hai+to+Gensou+no+Grimgar&filter=3
+    accept_all: yes
+#___________________________________________#
+  fill_ToDownload:
+    priority: 4
+    template:
+      - no_global
+    seen: local
+    imdb_list:
+      login: '{{secrets.imdb.user}}'
+      password: '{{secrets.imdb.pass}}'
+      list: watchlist
+    accept_all: yes
+    imdb_lookup: yes
+    thetvdb_lookup: yes
+    list_add:
+      - movie_list: ToDownload
+    list_queue:
+      - imdb_list:
+          login: '{{secrets.imdb.user}}'
+          password: '{{secrets.imdb.pass}}'
+          list: watchlist
+#___________________________________________#
+  disc_1080p_mov:
+    priority: 5
+    template: tempmovie
+    quality:
+      - 1080p
+    content_size:
+      min: 1000
+      max: 2800
+      strict: no
+    send_telegram:
+      recipients:
+        - username: '{{secrets.tg.user}}'
+      bot_token: '{{secrets.tg.bot_tk}}'
+      parse_mode: markdown
+      template: |
+        *{{imdb_name}} 1080p*
+        {{title}}
+        *Size-* [{{content_size}}]
+        *Rating-* [{{imdb_score}}]/10
+        [{{imdb_votes}}] Votes
+        *Plot-* [{{imdb_plot_outline}}]
+        [{{imdb_url}}]
+#___________________________________________#
+  disc_720p_mov:
+    priority: 6
+    template: tempmovie
+    quality:
+      - 720p
+    content_size:
+      min: 550
+      max: 1400
+      strict: no
+    send_telegram:
+      recipients:
+        - username: '{{secrets.tg.user}}'
+      bot_token: '{{secrets.tg.bot_tk}}'
+      parse_mode: markdown
+      template: |
+        *{{imdb_name}}  720p*
+        {{title}}
+        *Size-* [{{content_size}}]
+        *Rating-* [{{imdb_score}}]/10
+        [{{imdb_votes}}] Votes
+        *Plot-* [{{imdb_plot_outline}}]
+        [{{imdb_url}}]
+#___________________________________________#
+  disc_movie:
+    priority: 7
+    template: tempmovie
+    quality:
+      - 1080p
+      - 720p
+    content_size:
+      min: 550
+      max: 4200
+      strict: no
+    send_telegram:
+      recipients:
+        - username: '{{secrets.tg.user}}'
+      bot_token: '{{secrets.tg.bot_tk}}'
+      parse_mode: markdown
+      template: |
+        *{{imdb_name}}*
+        {{title}}
+        *Size-* [{{content_size}}]
+        *Quality-*720p-1080p
+        *Rating-* [{{imdb_score}}]/10
+        [{{imdb_votes}}] Votes
+        *Plot-* [{{imdb_plot_outline}}]
+        [{{imdb_url}}]
+#___________________________________________#
+  ondisk_imdb:
+    priority: 8
+    template:
+      - no_global
+    seen: local
+#input
+    movie_list: OnDisk
+#Meta
+    imdb_lookup: yes
+    thetvdb_lookup: yes
+#Filter
+    accept_all: yes
+#Output
+    list_add:
+      - imdb_list:
+          login: '{{secrets.imdb.user}}'
+          password: '{{secrets.imdb.pass}}'
+          list: OnDisk
+      - trakt_list:
+          username: Addicted5
+          account: traktuser
+          list: collection
+          type: movies
+#List Operation
+    list_queue:
+      - movie_list: OnDisk
+#___________________________________________#
+#___________________END___________________#
