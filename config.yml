@@ -8,15 +8,14 @@ templates:
       password: '{{secrets.transmission.pass}}'
       ratio: 0.001
     verify_ssl_certificates: no
-#___________________________________________
 tasks:
   tvshows:
     priority: 1
     include: tvseries.yml
     list_add:
       - trakt_list:
-          username: Addicted5
-          account: traktuser
+          username: user
+          account: useraccount
           list: collection
           type: shows
     send_telegram:
@@ -29,7 +28,6 @@ tasks:
         *{{title}}*
         *Size- [{{content_size}}] MB*
         [{{imdb_url}}]
-#___________________________________________
   horrible:
     priority: 2
     include: horribleanime.yml
@@ -44,11 +42,9 @@ tasks:
         *{{title}}*
         *Size- [{{content_size}}] MB*
         [{{imdb_url}}]
-#___________________________________________
   hdanime:
     priority: 3
     include: hdanime.yml
-#___________________________________________
   fill_ToDownload:
     priority: 4
     template:
@@ -67,7 +63,6 @@ tasks:
           login: '{{secrets.imdb.user}}'
           password: '{{secrets.imdb.pass}}'
           list: watchlist
-#___________________________________________
   disc_1080p_mov:
     priority: 5
     include: movies.yml
@@ -83,14 +78,13 @@ tasks:
       bot_token: '{{secrets.tg.bot_tk}}'
       parse_mode: markdown
       template: |
-        *{{imdb_name}} 1080p*
-        {{title}}
-        *Size-* [{{content_size}}]
+        ---*{{imdb_name}} 1080p*---
+        ---{{title}}---
+        *Size-* [{{content_size}}] MB
         *Rating-* [{{imdb_score}}]/10
         [{{imdb_votes}}] Votes
         *Plot-* [{{imdb_plot_outline}}]
         [{{imdb_url}}]
-#___________________________________________
   disc_720p_mov:
     priority: 6
     include: movies.yml
@@ -106,14 +100,13 @@ tasks:
       bot_token: '{{secrets.tg.bot_tk}}'
       parse_mode: markdown
       template: |
-        *{{imdb_name}}  720p*
-        {{title}}
-        *Size-* [{{content_size}}]
+        ---*{{imdb_name}}  720p*---
+        ---{{title}}---
+        *Size-* [{{content_size}}] MB
         *Rating-* [{{imdb_score}}]/10
         [{{imdb_votes}}] Votes
         *Plot-* [{{imdb_plot_outline}}]
         [{{imdb_url}}]
-#___________________________________________
   disc_movie:
     priority: 7
     include: movies.yml
@@ -130,15 +123,14 @@ tasks:
       bot_token: '{{secrets.tg.bot_tk}}'
       parse_mode: markdown
       template: |
-        *{{imdb_name}}*
-        {{title}}
-        *Size-* [{{content_size}}]
+        ---*{{imdb_name}}*---
+        ---{{title}}---
+        *Size-* [{{content_size}}] MB
         *Quality-*720p-1080p
         *Rating-* [{{imdb_score}}]/10
         [{{imdb_votes}}] Votes
         *Plot-* [{{imdb_plot_outline}}]
         [{{imdb_url}}]
-#___________________________________________
   ondisk_imdb:
     priority: 8
     template:
@@ -152,13 +144,12 @@ tasks:
           password: '{{secrets.imdb.pass}}'
           list: OnDisk
       - trakt_list:
-          username: Addicted5
-          account: traktuser
+          username: user
+          account: account
           list: collection
           type: movies
     list_queue:
       - movie_list: OnDisk
-#___________________________________________
 schedules: 
   - tasks: [hdanime]
     interval:
@@ -180,7 +171,6 @@ schedules:
     schedule:
       day_of_week: thu,fri,sat,sun
       minute: "*/45"
-#___________________________________________
 web_server:
   bind: 0.0.0.0
   port: 9090
