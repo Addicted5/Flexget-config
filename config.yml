@@ -51,6 +51,7 @@ templates:
         - rarbg: 
             category: [44, 45]
             ranked: True
+#Filter
     regexp:
       reject:
         - (?i)[ .]webrip[ .]
@@ -68,8 +69,10 @@ templates:
         - (?i)[ .]hdtc[ .]
         - (?i)[ .]hdcam[ .]
         - (?i)[ .]hdts[ .]
+#Output
     list_add:
       - movie_list: OnDisk
+#List Operation
     list_queue:
       - movie_list: ToDownload
 #_______________TVSHOWS____________________#
@@ -81,8 +84,8 @@ templates:
     configure_series:
       from:
         trakt_list:
-          username: Addicted5
-          account: traktuser
+          username: username
+          account: account
           list: mytvshows
           type: shows
           strip_dates: yes
@@ -100,8 +103,8 @@ templates:
 #Output
     list_add:
       - trakt_list:
-          username: Addicted5
-          account: traktuser
+          username: user
+          account: account
           list: collection
           type: shows
 #_______________HORRIBLESUBS_ANIME__________________#
@@ -120,7 +123,6 @@ templates:
             - S(\d+) (\d+)
           from_group: HorribleSubs
           quality: 720p
-#         quality: 720p 10bit !h265 !8bit
         anime480p:
           identified_by: sequence
           sequence_regexp:
@@ -136,14 +138,10 @@ templates:
       anime480p:
         - Boku no Hero Academia:
             begin: 07
-        - Flying Witch:
-            begin: 06
         - Gakusen Toshi Asterisk:
             begin: 19
         - Kabaneri of the Iron Fortress:
             begin: 05
-        - Kiznaiver:
-            begin: 06
         - Nijiiro Days:
             begin: 18
 #___________________________________________#
@@ -294,8 +292,8 @@ tasks:
           password: '{{secrets.imdb.pass}}'
           list: OnDisk
       - trakt_list:
-          username: Addicted5
-          account: traktuser
+          username: user
+          account: account
           list: collection
           type: movies
 #List Operation
